@@ -1,0 +1,20 @@
+ENTITIES:-
+
+Id,full_name,email,phone
+
+CHECKLIST:
+------------
+
+=>database - yes
+
+=>dependencies added - yes
+
+=>application properties - yes
+-db initialized
+-spring jpa automated
+
+=>spring entity class - yes
+
+=>Spring jpa repositary - yes
+
+=>spring main

@@ -1,0 +1,71 @@
+//entity
+
+package com.task.Users.Management.App.entity;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import lombok.Data;
+
+@Entity
+@Data
+public class Usercredits {
+	@Id
+	private String username;
+	private String userpassword;
+}
+
+//repository
+package com.task.Users.Management.App.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import com.task.Users.Management.App.entity.Usercredits;
+
+public interface usercreditsRepository extends JpaRepository<Usercredits,Long> {
+	 @Query("SELECT u FROM Usercredits u WHERE u.username = :username")
+	Usercredits findByusername(@Param("username") String username);
+}
+
+//service
+package com.task.Users.Management.App.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+
+import com.task.Users.Management.App.entity.Usercredits;
+import com.task.Users.Management.App.repository.usercreditsRepository;
+
+@Service
+public class UsercreditsService implements UserDetailsService{
+	
+	@Autowired
+	public usercreditsRepository userCreditsResp;
+	
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		Usercredits user = userCreditsResp.findByusername(username);
+		if (user == null) {
+		    throw new UsernameNotFoundException("User not found");
+		}
+		return User.builder()
+        .username(user.getUsername())
+        .password("{noop}" + user.getUserpassword())
+        .build();
+	}
+	
+	
+
+}
+
+//xml
+
+<dependency>
+    		<groupId>org.springframework.boot</groupId>
+    		<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>

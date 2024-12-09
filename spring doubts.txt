@@ -1,0 +1,164 @@
+public users deleteUsers(Long id) {
+	    
+	      return userResp.deleteById(id);
+	}
+
+-cannot return a void
+-------------------------------------------------------------------------------------------------------------------to create a custom search
+--------------------------
+1) define a custom method in repository(findbyname(string name))
+2)UPdate in userservice class
+public List<Users> searchUsers(String keyword) {
+        return userRepository.searchByKeyword(keyword);
+    }
+3)update in controller class
+@GetMapping("/search")
+    public List<Users> searchUsers(@RequestParam("keyword") String keyword) {
+        return userService.searchUsers(keyword);
+    }
+
+4)make changes in frontend
+-------------------------------------------------------------------------------------------------------------------
+
+public interface usersrepository extends JpaRepository<users,Long> {
+}
+
+Why Not a Class?
+If you used a class instead of an interface, you'd need to manually implement all methods for CRUD and query execution.
+The interface approach is declarative and leverages Spring's ability to generate implementations automatically.
+
+-------------------------------------------------------------------------------------------------------------------
+Why no arg constructor
+-----------------------
+
+In Jakarta Persistence (formerly JPA), having a no-argument (default) constructor in an entity class is essential for several reasons:
+
+Reflection-Based Instantiation:
+
+JPA providers like Hibernate use reflection to create instances of entity classes. Reflection requires a no-argument constructor to instantiate objects dynamically. Without it, the JPA provider cannot create an instance of the entity class, leading to runtime errors1.
+Proxy Objects:
+
+For performance optimization and lazy loading, JPA providers often use proxy objects. These proxies are dynamically generated subclasses of the entity classes and require a no-argument constructor to function correctly1.
+Seamless Mapping:
+
+During the process of mapping entity objects to database records, the JPA provider needs to instantiate entity classes. A no-argument constructor ensures that the provider can create these instances without issues1.
+-------------------------------------------------------------------------------------------------------------------
+
+SELECT u
+
+This specifies that the query should return objects of the entity class users. The alias u is used to refer to the entity in the rest of the query.
+FROM users u
+
+The users here refers to the entity class, not the database table. JPA uses the entity class to map to the table in the database.
+u is an alias for the entity class users.
+WHERE u.full_name = :full_name
+
+This is the filter condition or predicate. It specifies that the query should only return entities where the full_name field matches the value provided.
+u.full_name refers to the full_name field/property of the users entity.
+:full_name is a named parameter, which is a placeholder for the value that will be supplied when the query is executed.
+-------------------------------------------------------------------------------------------------------------------
+@RequestParam
+The @RequestParam annotation is used to extract query parameters, form parameters, and even files from the request. It binds the request parameters to the method arguments in a controller.
+
+Example:
+
+@GetMapping("/greet")
+public String greet(@RequestParam(name = "name", required = false, defaultValue = "Guest") String name) {
+    return "Hello, " + name;
+}
+name: The name of the request parameter to bind to.
+required: Whether the parameter is mandatory. Defaults to true.
+defaultValue: The default value to use if the parameter is not provided.
+In this example, if the name parameter is not provided in the request, it defaults to "Guest"12.
+
+@Param
+The @Param annotation is used in Spring Data JPA to bind method parameters to named parameters in JPQL or SQL queries. It helps in making the queries more readable and maintainable.
+
+Example:
+
+@Query("SELECT u FROM User u WHERE u.username = :username")
+User findByUsername(@Param("username") String username);
+username: The name of the parameter in the query.
+In this example, the username parameter in the method is bound to the :username parameter in the JPQL query3.
+
+
+@PathVariable
+The @PathVariable annotation is used to extract values from the URI template and bind them to method parameters in a controller. It is typically used for RESTful web services where the URL contains variable parts.
+
+Example:
+
+@GetMapping("/users/{id}")
+public String getUserById(@PathVariable("id") Long userId) {
+    return "User ID: " + userId;
+}
+id: The name of the path variable to bind to.
+In this example, the id part of the URL is extracted and bound to the userId method parameter45.
+
+Summary
+@RequestParam: Binds query parameters or form data to method parameters.
+@Param: Binds method parameters to named parameters in JPQL or SQL queries.
+@PathVariable: Binds URI template variables to method parameters.
+
+-------------------------------------------------------------------------------------------------------------------
+
+Sure! Let's break down each line of this Spring Boot configuration:
+
+1. **`spring.application.name=Users-Management-App`**:
+   - This sets the name of your Spring Boot application. It can be used for logging, monitoring, and other purposes where the application name is needed.
+
+2. **`spring.datasource.url=jdbc:mariadb://localhost:3306/users_management_db`**:
+   - This specifies the JDBC URL for connecting to the MariaDB database. It includes the protocol (`jdbc:mariadb`), the host (`localhost`), the port (`3306`), and the database name (`users_management_db`).
+
+3. **`spring.datasource.username=root`**:
+   - This sets the username for connecting to the database. In this case, it is `root`.
+
+4. **`spring.datasource.password=rebel`**:
+   - This sets the password for connecting to the database. Here, it is `rebel`.
+
+5. **`spring.datasource.driver-class-name=org.mariadb.jdbc.Driver`**:
+   - This specifies the fully qualified class name of the JDBC driver for MariaDB. Spring Boot can usually auto-detect this, but it can be explicitly set if needed.
+
+6. **`spring.jpa.hibernate.ddl-auto=update`**:
+   - This configures the behavior of Hibernate's schema management tool. The `update` value means that Hibernate will update the database schema to match the entity definitions. Other possible values include `none`, `validate`, `create`, and `create-drop`.
+
+7. **`spring.jpa.show-sql=true`**:
+   - This enables logging of SQL statements generated by Hibernate. When set to `true`, it helps in debugging by showing the SQL queries in the console.
+
+8. **`spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MariaDBDialect`**:
+   - This sets the Hibernate dialect to use for MariaDB. The dialect is a class that Hibernate uses to generate SQL optimized for a particular database.
+
+9. **`server.port=8081`**:
+   - This changes the default port on which the Spring Boot application runs. By default, Spring Boot runs on port `8080`, but this configuration changes it to `8081`.
+
+### Summary
+
+- **Application Name**: Identifies the application.
+- **Data Source URL**: Specifies the database connection details.
+- **Username and Password**: Credentials for database access.
+- **Driver Class Name**: Specifies the JDBC driver.
+- **DDL Auto**: Manages database schema updates.
+- **Show SQL**: Enables SQL logging.
+- **Hibernate Dialect**: Optimizes SQL for MariaDB.
+- **Server Port**: Changes the application's running port.
+
+These configurations help in setting up and managing the database connection, logging, and server settings for your Spring Boot application. If you have any more questions or need further clarification, feel free to ask!
+-------------------------------------------------------------------------------------------------------------------
+
+Key Differences
+View vs. Data:
+
+@Controller is used for returning views (HTML pages).
+@RestController is used for returning data directly (JSON, XML).
+Annotations:
+
+@Controller may need @ResponseBody on methods to return data.
+@RestController combines @Controller and @ResponseBody, so methods return data directly without needing @ResponseBody.
+Use Case:
+
+Use @Controller for traditional web applications.
+Use @RestController for RESTful web services and APIs.
+Summary
+@Controller: Handles web requests and returns views. Use it for traditional web applications.
+@RestController: Handles web requests and returns data directly. Use it for RESTful APIs.
+These annotations help you structure your Spring applications according to the type of response you need to provide123.
+-------------------------------------------------------------------------------------------------------------------
