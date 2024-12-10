@@ -1,8 +1,0 @@
-name
-age
-city
-college passed out
-qualificatin
-family members
-family 
-hobbies 
