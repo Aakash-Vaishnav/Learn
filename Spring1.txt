@@ -128,6 +128,7 @@ When you define an entity class (like User) with annotations like @Entity, Sprin
 The repository interface (like UserRepository) provides methods to interact with the database without writing SQL directly.
 
 When you call methods on the repository (e.g., userRepository.findAll()), Spring Data JPA generates SQL queries behind the scenes.
+____________________________________________________________________________
 
 It uses a JPA provider like Hibernate to execute the queries and map the results back to Java objects.
 
